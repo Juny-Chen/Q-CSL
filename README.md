@@ -19,9 +19,7 @@ Please prepare an environment with python=3.7, and then use the command "pip ins
 Mount the folders of BraTS 2021 training and validation dataset respectively under the folder "data". Modify path and Run "generate_train_list.py" and "generate_validation_list.py" to generate the train.txt and valid.txt, which are required for the next steps. Unzip "output_size_template.zip" and keep the unzipped file where it is, which is worked as a reference for the model to automatically output the segmentation with a proper size.
 
 `python3 generate_train_list.py`
-
 `python3 generate_valid_list.py`
-
 `unzip output_size_template.zip`
 
 Here is an example illustrating the proper way to mount the BraTS 2021 dataset:
@@ -30,7 +28,6 @@ Here is an example illustrating the proper way to mount the BraTS 2021 dataset:
 
 ## Data preprocess
 Modify path and Run "preprocess.py" to generate a pkl file for every case within its case_ID folder, which are required for the next steps.
-
 `python3 preprocess.py`
 
 ## Training
@@ -39,7 +36,6 @@ Modify path and Run "train.py" with 4 GPUs:
 
 ## Testing 
 Modify path and Run "test.py" :
-
 `python3 test.py`
 
 
@@ -49,8 +45,6 @@ Use the evaluation folder to calculation the Dice Score of the segmentation of t
 ## Reference
 1. [TransBTS](https://github.com/Wenxuan-1119/TransBTS)
 2. [Pytorch-Quanion-Neural-Networks](https://github.com/Orkis-Research/Pytorch-Quaternion-Neural-Networks)
-
-
 
 - **TransBTS**:
 ```bibtex
@@ -64,16 +58,19 @@ Use the evaluation folder to calculation the Dice Score of the segmentation of t
 ```
 - **Quaternion Neural Network**
 ```bibtex
-@inproceedings{parcollet2018quaternion,
+@inproceedings{
+    parcollet2018quaternion,
     title={Quaternion Recurrent Neural Networks},
     author={Titouan Parcollet and Mirco Ravanelli and Mohamed Morchid and Georges Linarès and Chiheb Trabelsi and Renato De Mori and Yoshua Bengio},
     booktitle={International Conference on Learning Representations},
     year={2019}
+}
 ```
 
 ## Citation
 ```bibtex
-@article{chen2023quaternion,
+@article{
+    chen2023quaternion,
     title={Quaternion Cross-Modality Spatial Learning for Multi-Modal Medical Image Segmentation},
     author={Chen, Junyang and Huang, Guoheng and Yuan, Xiaochen and Zhong, Guo and Zheng, Zewen and Pun, Chi-Man and Zhu, Jian and Huang, Zhixin},
     journal={IEEE Journal of Biomedical and Health Informatics},
