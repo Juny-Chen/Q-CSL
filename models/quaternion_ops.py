@@ -6,6 +6,11 @@
 # October 2018
 ##########################################################
 
+##########################################################
+# the convolution operation is changed to 3D quaternion 
+# convolution by authors. 
+##########################################################
+
 import torch
 import torch.nn as nn
 from torch.autograd import Variable

@@ -6,6 +6,13 @@
 # October 2018
 ##########################################################
 
+##########################################################
+# the convolution operation is changed to 3D quaternion 
+# convolution by authors. 
+##########################################################
+
+
+
 import numpy                   as np
 from   numpy.random            import RandomState
 import torch

@@ -15,20 +15,19 @@ from torch.utils.data import DataLoader
 
 from data.BraTS import BraTS
 from predict import validate_softmax
-from models.BiTrUnet.BiTrUnet import BiTrUnet
-from models.BiTrUnet.Vnet import VNet
+from models.QCSL import QCSL
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--main_path', default='/root/autodl-tmp/save_info', type=str)
+parser.add_argument('--main_path', default='/your_path/save_info', type=str)
 
 parser.add_argument('--user', default='yang', type=str)
 
-parser.add_argument('--root', default='/root/autodl-tmp/data/', type=str)
+parser.add_argument('--root', default='/your_path/data/', type=str)
 
 parser.add_argument('--valid_dir', default='BraTS2021_ValidationData', type=str)
 
-parser.add_argument('--valid_file', default='/root/autodl-tmp/data/official_valid.txt', type=str)
+parser.add_argument('--valid_file', default='/your_path/data/official_valid.txt', type=str)
 
 parser.add_argument('--output_dir', default='output', type=str)
 
@@ -38,7 +37,7 @@ parser.add_argument('--visual', default='visualization', type=str)
 
 parser.add_argument('--experiment', default='BiTrUnet', type=str)
 
-parser.add_argument('--test_date', default='2022-10-11', type=str)
+parser.add_argument('--test_date', default='2022-10-11', type=str)  
 
 parser.add_argument('--test_file', default='model_epoch_last.pth', type=str)
 
@@ -75,16 +74,14 @@ def main():
     random.seed(args.seed)
     np.random.seed(args.seed)
 
-    #     model = BiTrUnet(dataset='brats', _conv_repr=True, _pe_type="learned")
-
-    model = VNet()
+    model = QCSL()
 
     model = torch.nn.DataParallel(model).cuda()
 
     # load_file = os.path.join(os.path.abspath(os.path.dirname(__file__)),
     #                          'checkpoint', args.experiment + args.test_date, args.test_file)
 
-    load_file = os.path.join('/root/autodl-tmp/', 'checkpoint', args.experiment + args.test_date, args.test_file)
+    load_file = os.path.join('/your_path/', 'checkpoint', args.experiment + args.test_date, args.test_file)
 
     print(load_file)
 

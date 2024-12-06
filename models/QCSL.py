@@ -4,18 +4,16 @@ import torch.nn as nn
 from torch.nn.init import kaiming_normal_, constant_
 from models.quaternion_layer import *
 from models.non_local_dot_product import NONLocalBlock3D
-from models.cross_attetion import ModalityFusion
 
 def conv(batchNorm, in_planes, out_planes, kernel_size=3, stride=1):
     if batchNorm:
         return nn.Sequential(
-
             QuaternionConv(in_planes, out_planes, kernel_size=kernel_size, stride=stride,
                            padding=(kernel_size - 1) // 2, bias=False),
             nn.BatchNorm3d(out_planes),
             nn.LeakyReLU(0.1),
 
-            # nn.Dropout(p=0.2)
+            nn.Dropout(p=0.2)
         )
     else:
         return nn.Sequential(
@@ -36,7 +34,6 @@ class fusion_self_attention(nn.Module):
     def __init__(self, in_channel):
         super(fusion_self_attention, self).__init__()
         self.in_channel = in_channel
-        # 这个卷积序列可以自己定一下，先搞个简单的
         self.convQ = conv(batchNorm=True, in_planes=self.in_channel, out_planes=self.in_channel,
                           kernel_size=3, stride=1)
         self.convK = conv(batchNorm=True, in_planes=self.in_channel, out_planes=self.in_channel,
@@ -47,7 +44,6 @@ class fusion_self_attention(nn.Module):
         self.weight = nn.Parameter(torch.zeros(4), requires_grad=True)
         self.softmax = nn.Softmax(dim=2)
     def forward(self, a, b, c, d):
-        # 可以有一种和编码器传过来的值做的方法
         aQ = self.convQ(a)
         bQ = self.convQ(b)
         cQ = self.convQ(c)
@@ -90,17 +86,18 @@ class QCSL(nn.Module):
 
         self.batchNorm = batchNorm
         self.assign_ch = 4  # 6/18/26
-        self.conva4 = nn.Conv3d(1, 4, kernel_size=3, stride=1, padding=(3 - 1) // 2, bias=False)  # s=1,不变
+        # s=1, not change dimension
+        self.conva4 = nn.Conv3d(1, 4, kernel_size=3, stride=1, padding=(3 - 1) // 2, bias=False)  
         self.convb4 = nn.Conv3d(1, 4, kernel_size=3, stride=1, padding=(3 - 1) // 2, bias=False)
         self.convc4 = nn.Conv3d(1, 4, kernel_size=3, stride=1, padding=(3 - 1) // 2, bias=False)
         self.convd4 = nn.Conv3d(1, 4, kernel_size=3, stride=1, padding=(3 - 1) // 2, bias=False)
-
-        self.conv_a1t = conv(self.batchNorm, 4, 16, kernel_size=3, stride=1)  # s=1,不变
+        # s=1, not change dimension, learn the coordinate
+        self.conv_a1t = conv(self.batchNorm, 4, 16, kernel_size=3, stride=1)  
         self.conv_b1t = conv(self.batchNorm, 4, 16, kernel_size=3, stride=1)
         self.conv_c1t = conv(self.batchNorm, 4, 16, kernel_size=3, stride=1)
         self.conv_d1t = conv(self.batchNorm, 4, 16, kernel_size=3, stride=1)
 
-        self.conv_a1 = conv(self.batchNorm, 16, 32, kernel_size=3, stride=2)  # s=2时会减半，p=1
+        self.conv_a1 = conv(self.batchNorm, 16, 32, kernel_size=3, stride=2)  # s=2, half dimension，p=1
         self.conv_b1 = conv(self.batchNorm, 16, 32, kernel_size=3, stride=2)
         self.conv_c1 = conv(self.batchNorm, 16, 32, kernel_size=3, stride=2)
         self.conv_d1 = conv(self.batchNorm, 16, 32, kernel_size=3, stride=2)
@@ -166,14 +163,14 @@ class QCSL(nn.Module):
         self.deconv_d1 = deconv(32, 16)
         self.dc_d1 = conv(self.batchNorm, 32, 8)
 
-        #         self.att1 = fusion_self_attention(8)
+        # self.att1 = fusion_self_attention(8) # please use it under enough cuda memory 
 
         self.assc = nn.Conv3d(32, 4, kernel_size=3, stride=1, padding=1, bias=True)
 
         self.softmax = nn.Softmax(1)
 
     def forward(self, inputs):
-        ya_in = self.conva4(inputs[:, 0:1, ...])
+        ya_in = self.conva4(inputs[:, 0:1, ...]) 
         yb_in = self.convb4(inputs[:, 1:2, ...])
         yc_in = self.convc4(inputs[:, 2:3, ...])
         yd_in = self.convd4(inputs[:, 3:4, ...])
@@ -276,7 +273,7 @@ class QCSL(nn.Module):
         de_d = torch.cat((de_d, yd_1t), dim=1)
         de_d = self.dc_d1(de_d)
 
-        #         de_a, de_b, de_c, de_d = self.att1(de_a, de_b, de_c, de_d)
+        # de_a, de_b, de_c, de_d = self.att1(de_a, de_b, de_c, de_d)
 
         input_o = torch.cat((de_a, de_b, de_c, de_d), dim=1)
         mask = self.assc(input_o)

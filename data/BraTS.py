@@ -11,7 +11,6 @@ from scipy import ndimage
 
 def coor():
     "concat coordinate"
-    # ===================坐标映射==========
     curr_img_length = int(np.floor(240))
     curr_img_height = int(np.floor(240))
     curr_img_width = int(np.floor(160))
@@ -28,7 +27,6 @@ def coor():
 
 
 def pkload(fname):
-    #     co = coor()
     with open(fname, 'rb') as f:
         return pickle.load(f)
 
@@ -110,8 +108,9 @@ class Random_Crop(object):
 
         image = np.ascontiguousarray(image.transpose(3, 0, 1, 2))
 
-        coordinate = self.coordinate[..., H: H + 128, W: W + 128, D: D + 128]
-        image = np.concatenate([image, coordinate])
+        # coordinate = self.coordinate[..., H: H + 128, W: W + 128, D: D + 128]
+        # image = np.concatenate([image, coordinate])
+        image = np.concatenate([image]) # or use covolutional network to learn the coor 
         return {'image': image, 'label': label}
 
 def transform(sample):

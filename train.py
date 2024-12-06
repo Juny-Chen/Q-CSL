@@ -30,9 +30,9 @@ local_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 parser = argparse.ArgumentParser()
 
 # Basic Information
-parser.add_argument('--user', default='yang', type=str)
+parser.add_argument('--user', default='QCSL', type=str)
 
-parser.add_argument('--experiment', default='Qmnet_att_fusion', type=str)
+parser.add_argument('--experiment', default='QCSL', type=str)
 
 parser.add_argument('--date', default=local_time.split(' ')[0], type=str)
 
@@ -42,9 +42,9 @@ parser.add_argument('--description',
                     type=str)
 
 # DataSet Information
-parser.add_argument('--main_path', default='/root/autodl-tmp/save_info', type=str)
+parser.add_argument('--main_path', default='/your_path/save_info', type=str)
 
-parser.add_argument('--root', default='/root/autodl-tmp/data/', type=str)
+parser.add_argument('--root', default='/your_path/data/', type=str)
 
 parser.add_argument('--train_dir', default='BraTS2021_TrainingData', type=str)
 
@@ -52,13 +52,13 @@ parser.add_argument('--valid_dir', default='BraTS2021_ValidationData', type=str)
 
 parser.add_argument('--mode', default='train', type=str)
 
-parser.add_argument('--train_file', default='/root/autodl-tmp/data/train.txt', type=str)
+parser.add_argument('--train_file', default='/your_path/data/train.txt', type=str)
 
-parser.add_argument('--valid_file', default='/root/autodl-tmp/data/official_valid.txt', type=str)
+parser.add_argument('--valid_file', default='/your_path/data/official_valid.txt', type=str)
 
 parser.add_argument('--dataset', default='brats', type=str)
 
-parser.add_argument('--model_name', default='Qmnet_att_fusion', type=str) #Vnet
+parser.add_argument('--model_name', default='QCSL', type=str) 
 
 parser.add_argument('--input_C', default=4, type=int)
 
@@ -93,17 +93,17 @@ parser.add_argument('--no_cuda', default=True, type=bool)
 
 parser.add_argument('--gpu', default='0,1,2,3', type=str)
 
-# parser.add_argument('--gpu', default='0', type=str)
+parser.add_argument('--gpu', default='0', type=str)
 
-parser.add_argument('--num_workers', default=16, type=int)  # 8
+parser.add_argument('--num_workers', default=16, type=int)  
 
 parser.add_argument('--batch_size', default=2, type=int)
 
 parser.add_argument('--start_epoch', default=0, type=int)
 
-parser.add_argument('--end_epoch', default=20, type=int)  # 3000
+parser.add_argument('--end_epoch', default=20, type=int)  
 
-parser.add_argument('--save_freq', default=20, type=int)  # 50
+parser.add_argument('--save_freq', default=20, type=int)  
 
 parser.add_argument('--resume', default='', type=str)
 
@@ -146,14 +146,9 @@ def main_worker():
     if not os.path.exists(writer_path):
         os.makedirs(writer_path)
     writer = SummaryWriter(log_dir=writer_path)
-    _, model = BiTrUnet(dataset='brats', _conv_repr=True, _pe_type="learned")
 
-#     model = Qmnet_nob()
-#     model = VNet()
-#     model = Qmnet()
-#     model = Qmnet_att()
-    model = Qmnet_att_fusion(args=args)
-#     model = Qmnet_att_axis()
+    model = QCSL(args=args)
+
     model.cuda(args.local_rank)
     model = nn.parallel.DistributedDataParallel(model, device_ids=[args.local_rank], output_device=args.local_rank,
                                                 find_unused_parameters=True)
@@ -165,14 +160,11 @@ def main_worker():
     criterion = getattr(criterions, args.criterion)
 
     if args.local_rank == 0:
-        #         checkpoint_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'checkpoint', args.experiment+args.date)
-        checkpoint_dir = os.path.join('/root/autodl-tmp/', 'checkpoint', args.experiment + args.date)
+
+        checkpoint_dir = os.path.join('/', 'checkpoint', args.experiment + args.date)
 
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)
-
-    #     resume = '/root/autodl-tmp/checkpoint/BiTrUnet2022-10-12/model_epoch_last.pth'
-    #     resume ='/root/autodl-tmp/checkpoint/BiTrUnet2022-10-18/model_epoch_last.pth'
 
     resume = ''
     if os.path.isfile(resume) and args.load:

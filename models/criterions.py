@@ -107,7 +107,6 @@ def Generalized_dice(output, target, eps=1e-5, weight_type='square'):
     else:
         raise ValueError('Check out the weight_type :', weight_type)
 
-    # print(class_weights)
     intersect = (output * target).sum(-1)
     intersect_sum = (intersect * class_weights).sum()
     denominator = (output + target).sum(-1)
