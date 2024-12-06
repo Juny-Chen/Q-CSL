@@ -12,9 +12,7 @@ import setproctitle
 import torch
 import torch.backends.cudnn as cudnn
 import torch.optim
-# from models.BiTrUnet import Vnet #BiTrUnet
-from models.BiTrUnet.Vnet import VNet
-from models.qmnet import *
+from models.QCSL import *
 
 import torch.distributed as dist
 from models import criterions
@@ -77,7 +75,7 @@ parser.add_argument('--crop_D', default=128, type=int)
 parser.add_argument('--output_D', default=155, type=int)
 
 # Training Information
-parser.add_argument('--lr', default=0.0001, type=float)  # 0.0002
+parser.add_argument('--lr', default=0.0001, type=float)   
 
 parser.add_argument('--weight_decay', default=1e-5, type=float)
 
@@ -200,7 +198,7 @@ def main_worker():
     torch.set_grad_enabled(True)
 
     for epoch in range(args.start_epoch, args.end_epoch):
-        train_sampler.set_epoch(epoch)  # shuffle
+        train_sampler.set_epoch(epoch)  
         setproctitle.setproctitle('{}: {}/{}'.format(args.user, epoch + 1, args.end_epoch))
         start_epoch = time.time()
         loss_data = {"dice": {'total_loss': 0, 'loss1': 0, 'loss2': 0, 'loss3': 0},
@@ -233,7 +231,7 @@ def main_worker():
             loss_data['dice']['loss1'] += loss1.item()
             loss_data['dice']['loss2'] += loss2.item()
             loss_data['dice']['loss3'] += loss3.item()
-            loss_data['iter'] = i + 1  # one epoch 迭代一次 0--len(train_load)
+            loss_data['iter'] = i + 1  
 
             optimizer.zero_grad()
             loss.backward()
