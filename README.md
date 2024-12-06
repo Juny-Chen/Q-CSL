@@ -1,7 +1,7 @@
 # Quaternion Cross-modality Spatial Learning for Multi-modal Medical Image Segmentation
 This repo is the source code for Quaternion Cross-modality Spatial Learning for Multi-modal Medical Image Segmentation. 
 
-![fig](.\models\fig.png)
+![fig](./models/fig.png)
 
 ## Requirements
 - python 3.7
